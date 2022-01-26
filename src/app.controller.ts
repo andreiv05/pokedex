@@ -1,18 +1,18 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { PokemonInformation } from './app.types';
-import { AppService } from './app.service';
+import { PokeApiService, TranslatorService } from './services';
 
 @Controller('/pokemon')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+  constructor(
+    private readonly pokeapiService: PokeApiService,
+    private readonly translateService: TranslatorService,
+  ) {}
 
   @Get('/:pokemonName')
-  getBasicInfo(@Param('pokemonName') pokemonName: string): PokemonInformation {
+  async getBasicInfo(
+    @Param('pokemonName') pokemonName: string,
+  ): Promise<PokemonInformation> {
     return {
       name: pokemonName,
       description: 'This is a description',
