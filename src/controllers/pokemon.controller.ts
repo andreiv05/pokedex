@@ -4,6 +4,9 @@ import {
   Param,
   Logger,
   ServiceUnavailableException,
+  UseInterceptors,
+  CacheInterceptor,
+  CacheTTL,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Pokemon, ServiceUnavailable } from '../entities';
@@ -30,6 +33,8 @@ export class PokemonController {
     description: 'Service unavailable',
     type: ServiceUnavailable,
   })
+  @CacheTTL(3600)
+  @UseInterceptors(CacheInterceptor)
   @Get('/:pokemonName')
   async getBasicInfo(
     @Param('pokemonName') pokemonName: string,
