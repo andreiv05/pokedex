@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { PokemonInformation } from '../app.types';
 
 @Injectable()
 export class PokeApiService {
@@ -10,7 +11,7 @@ export class PokeApiService {
     private readonly configService: ConfigService,
   ) {}
 
-  async getBasicInfo(pokemonName: string): Promise<any> {
+  async getBasicInfo(pokemonName: string): Promise<PokemonInformation> {
     const pokeapiBaseUrl = this.configService.get<string>('POKEAPI_BASE_URL');
     const pokeapiResponse = await firstValueFrom(
       this.httpService.get(`${pokeapiBaseUrl}/pokemon-species/${pokemonName}`),
