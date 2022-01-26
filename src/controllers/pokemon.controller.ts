@@ -7,9 +7,10 @@ import {
   UseInterceptors,
   CacheInterceptor,
   CacheTTL,
+  NotFoundException,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Pokemon, ServiceUnavailable } from '../entities';
+import { Pokemon, ServiceUnavailable, NotFound } from '../entities';
 import { PokemonInformation } from '../app.types';
 import { PokemonService } from '../services';
 
@@ -30,6 +31,11 @@ export class PokemonController {
     description: 'Service unavailable',
     type: ServiceUnavailable,
   })
+  @ApiResponse({
+    status: 404,
+    description: 'Unknown pokemon name',
+    type: NotFound,
+  })
   @CacheTTL(3600)
   @UseInterceptors(CacheInterceptor)
   @Get('/:pokemonName')
@@ -41,6 +47,11 @@ export class PokemonController {
       pokeInfo = await this.pokemonService.getBasicInfo(pokemonName);
     } catch (error) {
       this.logger.error('PokeAPI' + error);
+
+      if (error.response.status === 404) {
+        throw new NotFoundException('Unknown pokemon name');
+      }
+
       throw new ServiceUnavailableException('PokeAPI is not available');
     }
 
@@ -57,8 +68,13 @@ export class PokemonController {
     description: 'Service unavailable',
     type: ServiceUnavailable,
   })
+  @ApiResponse({
+    status: 404,
+    description: 'Unknown pokemon name',
+    type: NotFound,
+  })
   @Get('/translated/:pokemonName')
-  async get(
+  async getBasicInfoTranslated(
     @Param('pokemonName') pokemonName: string,
   ): Promise<PokemonInformation> {
     let pokeInfo = await this.getBasicInfo(pokemonName);

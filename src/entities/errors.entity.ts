@@ -10,3 +10,14 @@ export class ServiceUnavailable {
   @ApiProperty({ example: 'Service Unavailable' })
   error: string;
 }
+
+export class NotFound {
+  @ApiProperty({ example: 404 })
+  statusCode: number;
+
+  @ApiProperty({ example: 'Unknown pokemon name' })
+  message: string;
+
+  @ApiProperty({ example: 'Not Found' })
+  error: string;
+}

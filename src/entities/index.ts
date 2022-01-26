@@ -1,4 +1,4 @@
 import { Pokemon } from './pokemon.entity';
-import { ServiceUnavailable } from './errors.entity';
+import { ServiceUnavailable, NotFound } from './errors.entity';
 
-export { Pokemon, ServiceUnavailable };
+export { Pokemon, ServiceUnavailable, NotFound };
