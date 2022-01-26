@@ -2,7 +2,7 @@ import { HttpModule } from '@nestjs/axios';
 import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PokemonController } from './controllers';
-import { PokeApiService, TranslatorService } from './services';
+import { PokeApiService, TranslatorService, PokemonService } from './services';
 
 @Module({
   imports: [
@@ -13,6 +13,6 @@ import { PokeApiService, TranslatorService } from './services';
     CacheModule.register(),
   ],
   controllers: [PokemonController],
-  providers: [PokeApiService, TranslatorService],
+  providers: [PokeApiService, TranslatorService, PokemonService],
 })
 export class AppModule {}

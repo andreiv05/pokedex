@@ -11,17 +11,14 @@ import {
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Pokemon, ServiceUnavailable } from '../entities';
 import { PokemonInformation } from '../app.types';
-import { PokeApiService, TranslatorService } from '../services';
+import { PokemonService } from '../services';
 
 @ApiTags('pokemon')
 @Controller('/pokemon')
 export class PokemonController {
   private readonly logger = new Logger('AppController');
 
-  constructor(
-    private readonly pokeapiService: PokeApiService,
-    private readonly translateService: TranslatorService,
-  ) {}
+  constructor(private readonly pokemonService: PokemonService) {}
 
   @ApiResponse({
     status: 200,
@@ -41,7 +38,7 @@ export class PokemonController {
   ): Promise<PokemonInformation> {
     let pokeInfo;
     try {
-      pokeInfo = await this.pokeapiService.getBasicInfo(pokemonName);
+      pokeInfo = await this.pokemonService.getBasicInfo(pokemonName);
     } catch (error) {
       this.logger.error('PokeAPI' + error);
       throw new ServiceUnavailableException('PokeAPI is not available');
@@ -55,35 +52,23 @@ export class PokemonController {
     description: 'Get basic pokemon information',
     type: Pokemon,
   })
+  @ApiResponse({
+    status: 503,
+    description: 'Service unavailable',
+    type: ServiceUnavailable,
+  })
   @Get('/translated/:pokemonName')
   async get(
     @Param('pokemonName') pokemonName: string,
   ): Promise<PokemonInformation> {
-    const pokeInfo = await this.getBasicInfo(pokemonName);
+    let pokeInfo = await this.getBasicInfo(pokemonName);
 
-    let translatedDescription = null;
     try {
-      const { description, habitat, isLegendary } = pokeInfo;
-
-      if (isLegendary || habitat === 'cave') {
-        translatedDescription = await this.translateService.yodaTranslate(
-          description,
-        );
-      } else {
-        translatedDescription =
-          await this.translateService.shakespeareTranslate(
-            pokeInfo.description,
-          );
-      }
+      pokeInfo = await this.pokemonService.translate(pokeInfo);
     } catch (error) {
-      this.logger.error('TranslatorService' + error);
+      this.logger.error('Translation' + error);
     }
 
-    return {
-      ...pokeInfo,
-      description: translatedDescription
-        ? translatedDescription
-        : pokeInfo.description,
-    };
+    return pokeInfo;
   }
 }
