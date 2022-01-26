@@ -5,9 +5,12 @@ import {
   Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Pokemon, ServiceUnavailable } from '../entities';
 import { PokemonInformation } from '../app.types';
 import { PokeApiService, TranslatorService } from '../services';
 
+@ApiTags('pokemon')
 @Controller('/pokemon')
 export class PokemonController {
   private readonly logger = new Logger('AppController');
@@ -17,6 +20,16 @@ export class PokemonController {
     private readonly translateService: TranslatorService,
   ) {}
 
+  @ApiResponse({
+    status: 200,
+    description: 'Get basic pokemon information',
+    type: Pokemon,
+  })
+  @ApiResponse({
+    status: 503,
+    description: 'Service unavailable',
+    type: ServiceUnavailable,
+  })
   @Get('/:pokemonName')
   async getBasicInfo(
     @Param('pokemonName') pokemonName: string,
@@ -32,6 +45,11 @@ export class PokemonController {
     return pokeInfo;
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Get basic pokemon information',
+    type: Pokemon,
+  })
   @Get('/translated/:pokemonName')
   async get(
     @Param('pokemonName') pokemonName: string,
