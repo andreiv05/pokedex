@@ -1,73 +1,129 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Pokedex
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project provides an API for querying Pokemon information, using [PokeAPI](https://pokeapi.co). Also, you can get fun translations for the available properties.
+
+## Prerequisites
+
+Make sure you have installed all of the following prerequisites on your development machine:
+
+- Git
+- Node.js (v16.13.0)
+- NPM (v8.1.0)
 
 ## Installation
 
 ```bash
+$ git clone https://github.com/andreiv05/pokedex.git
+
+$ cd pokedex
+
 $ npm install
 ```
 
-## Running the app
+## Running the app locally
 
 ```bash
-# development
 $ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Test
+This will start a local HTTP server on the specified port in the `.env` file (default is 5000).
+
+## Running the app with Docker
 
 ```bash
-# unit tests
+$ docker build . -t pokedex
+
+$ docker run -p 5000:5000 -d pokedex
+```
+
+## API Documentation - Swagger
+
+The API documentation is dinamically generated from the Typescript interfaces and can be found on the `/docs` endpoint. For local deployment: `http://localhost:5000/docs`
+
+![Swagger](docs/swagger.png)
+
+## Environment configuration
+
+The app is configured via environment variables. For local deployment, you can use the `.env` file. Defaults value used:
+
+- PORT=5000
+- POKEAPI_BASE_URL="http://pokeapi.co/api/v2"
+- TRANSLATOR_BASE_URL="https://api.funtranslations.com"
+
+## Caching
+
+The external API used [PokeAPI](https://pokeapi.co) serve static assets, so we can cache the response for an improved user experience and a lower use of computational power. When we have a cache hit the response time decrease from `~450ms` to `~6ms`. The cache system use the URL as the resource identifier.
+
+Currently, only responses for the `/pokemon/:pokemonName` endpoints are cached. We don't use caching for the `/pokemon/translated/:pokemonName` endpoint because we don't have the guarantee that we will receive the same translation, providing the same input for [FunTranslationAPI](https://funtranslations.com/api/)
+
+## Unit tests
+
+We have 100% coverage on Controllers and Services, covering all the critical components that have business logic or handle the lifecycle of the request.
+
+```bash
+------------------------|---------|----------|---------|---------|-------------------
+File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+------------------------|---------|----------|---------|---------|-------------------
+All files               |     100 |      100 |     100 |     100 |
+ controllers            |     100 |      100 |     100 |     100 |
+  index.ts              |     100 |      100 |     100 |     100 |
+  pokemon.controller.ts |     100 |      100 |     100 |     100 |
+ services               |     100 |      100 |     100 |     100 |
+  index.ts              |     100 |      100 |     100 |     100 |
+  pokeapi.service.ts    |     100 |      100 |     100 |     100 |
+  pokemon.service.ts    |     100 |      100 |     100 |     100 |
+  translator.service.ts |     100 |      100 |     100 |     100 |
+------------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 4 passed, 4 total
+Tests:       16 passed, 16 total
+Snapshots:   0 total
+Time:        2.883 s, estimated 3 s
+```
+
+If you want to run the unit tests suite:
+
+```bash
+# Run the unit test
 $ npm run test
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
+# Run coverage
 $ npm run test:cov
 ```
 
-## Support
+## Integration tests (E2E)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+We have integrations tests in order to test the external services used: [PokeAPI](https://pokeapi.co) and [FunTranslationAPI](https://funtranslations.com/api/).
 
-## Stay in touch
+```bash
+ PASS  test/app.e2e-spec.ts (6.87 s)
+  PokemonController (e2e)
+    ✓ /pokemon/:pokemonName (GET) (778 ms)
+    ✓ /pokemon/translated/:pokemonName (GET) - yoda translation (3244 ms)
+    ✓ /pokemon/translated/:pokemonName (GET) - shakespeare translation (779 ms)
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Test Suites: 1 passed, 1 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        6.95 s
+Ran all test suites.
+```
 
-## License
+If you want to run the integration tests modules:
 
-Nest is [MIT licensed](LICENSE).
+```bash
+npm run test:e2e
+```
+
+## Production checklist
+
+- Currently, the [FunTranslationAPI](https://funtranslations.com/api/) have very strict ratelimiting (60 API calls a day distribution of 5 calls an hour). Depending on use, we may need to upgrade to their plaid plan.
+- Integration with a monitoring system(e.g. DataDog, Prometheus) for resource consumption, stacktraces, error rate and so on.
+- Alerts configure based on the multiple metrics. Some examples:
+  - CPU / memory consumption
+  - Traffic increase
+  - Size of the deployed artifact
+- Healthcheck endpoint and probes for orchestrators
+- Graceful shutdown, for example handling the SIGTERM signal
