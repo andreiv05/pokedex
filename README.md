@@ -28,19 +28,19 @@ $ npm install
 $ npm run start
 ```
 
-This will start a local HTTP server on the specified port in the `.env` file (default is 5000).
+This will start a local HTTP server on the specified port in the `.env` file (default is 4000).
 
 ## Running the app with Docker
 
 ```bash
 $ docker build . -t pokedex
 
-$ docker run -p 5000:5000 -d pokedex
+$ docker run -p 4000:4000 -d pokedex
 ```
 
 ## API Documentation - Swagger
 
-The API documentation is dinamically generated from the Typescript interfaces and can be found on the `/docs` endpoint. For local deployment: `http://localhost:5000/docs`
+The API documentation is dinamically generated from the Typescript interfaces and can be found on the `/docs` endpoint. For local deployment: `http://localhost:4000/docs`
 
 ![Swagger](docs/swagger.png)
 
@@ -48,7 +48,7 @@ The API documentation is dinamically generated from the Typescript interfaces an
 
 The app is configured via environment variables. For local deployment, you can use the `.env` file. Defaults value used:
 
-- PORT=5000
+- PORT=4000
 - POKEAPI_BASE_URL="http://pokeapi.co/api/v2"
 - TRANSLATOR_BASE_URL="https://api.funtranslations.com"
 
@@ -127,3 +127,14 @@ npm run test:e2e
   - Size of the deployed artifact
 - Healthcheck endpoint and probes for orchestrators
 - Graceful shutdown, for example handling the SIGTERM signal
+
+## Changelog
+
+### V0.1:
+
+    Initial release
+
+### V0.2:
+
+    Changed the default http server port from 5000 to 4000, because 5000 is used by control center in macOS, starting with Monterey.
+    https://nono.ma/port-5000-used-by-control-center-in-macos

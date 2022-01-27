@@ -110,8 +110,6 @@ describe('PokemonController', () => {
       const translateServiceSpy = jest
         .spyOn(pokemonService, 'translate')
         .mockImplementation(async (pokemon) => {
-          console.log(pokemon);
-
           if (pokemon.name === mockPokemon.name) {
             return expectedResponse;
           }
